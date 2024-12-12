@@ -1,9 +1,19 @@
 <head>
     <base href="https://www.w3schools.com/" target="_blank">
-    <script type="module" >
-      import ServiceNowChat from "https://dev248355.service-now.com/uxasset/externals/now-requestor-chat-popover-app/index.jsdbx?sysparm_substitute=false";
-      var chat = new ServiceNowChat({ instance: "https://dev248355.service-now.com/", });
-    </script>
+    <script type="module">
+  import ServiceNowChat from "https://dev248355.service-now.com/uxasset/externals/now-requestor-chat-popover-app/index.jsdbx?sysparm_substitute=false";
+
+  // Initiate Virtual Agent
+  var chat = new ServiceNowChat({
+    instance: "https://dev248355.service-now.com/",
+    sso: true,
+    userToken: "SEU_TOKEN_DE_ACESSO", // Substitua por um token de autenticação válido
+  });
+
+  // Criar o popover do chat
+  chat.createPopover();
+</script>
+
     </head>
     
     <body>
