@@ -1,29 +1,47 @@
 <head>
-    <base href="https://www.servicenow.com/community/virtual-agent-nlu-articles/how-to-embed-virtual-agent-in-an-external-site-updated-for-tokyo/ta-p/2308092" target="_blank">
-    <base2 href="https://www.servicenow.com/docs/pt-BR/bundle/xanadu-conversational-interfaces/page/administer/virtual-agent/task/add-portable-va-client-website.html" target="_blank">
-    <base3 href="https://www.servicenow.com/community/virtual-agent-nlu-articles/embed-virtual-agent-in-an-external-website-with-sso-integration/ta-p/2309231"
-    <script type="module">
-  import ServiceNowChat from "https://dev248355.service-now.com/uxasset/externals/now-requestor-chat-popover-app/index.jsdbx?sysparm_substitute=false";
+  <base href="https://www.servicenow.com/community/virtual-agent-nlu-articles/how-to-embed-virtual-agent-in-an-external-site-updated-for-tokyo/ta-p/2308092" target="_blank">
+  <base2 href="https://www.servicenow.com/docs/pt-BR/bundle/xanadu-conversational-interfaces/page/administer/virtual-agent/task/add-portable-va-client-website.html" target="_blank">
+  <base3 href="https://www.servicenow.com/community/virtual-agent-nlu-articles/embed-virtual-agent-in-an-external-website-with-sso-integration/ta-p/2309231">
+  <script type="module">
+    import ServiceNowChat from "https://dev248355.service-now.com/uxasset/externals/now-requestor-chat-popover-app/index.jsdbx?sysparm_substitute=false";
 
-  // Initiate Virtual Agent
-  var chat = new ServiceNowChat({
-    instance: "https://dev248355.service-now.com/",
-    sso: true,
-    userToken: "SEU_TOKEN_DE_ACESSO", // Substitua por um token de autenticação válido
-  });
+    // Initiate Virtual Agent
+    var chat = new ServiceNowChat({
+      instance: "https://dev248355.service-now.com/",
+      sso: true,
+      userToken: "SEU_TOKEN_DE_ACESSO", // Substitua por um token de autenticação válido
+    });
 
-  // Criar o popover do chat
-  chat.createPopover();
-</script>
+    // Criar o popover do chat
+    chat.createPopover();
+  </script>
+</head>
 
-    </head>
-    
-    <body>
-    <br><a href="tags/tag_base.asp">Artigo da comunidade do ServiceNow sobre como integrar o Virtual Agent.</a></br>
-    <br><a href="tags/tag_base2.asp">URDocumentação oficial sobre adicionar o Virtual Agent em sites externos.</a></br>
-    <br><a href="tags/tag_base3.asp">Configuração do SSO no Virtual Agent</a></br>
-        <iframe 
-        src="https://dev248355.service-now.com/sn_va_web_client_app_embed.do" 
-        style="width: 10%; height: 60px; border: none;" 
-        allow="cross-origin"></iframe>
-    </body>
+<body>
+  <br><a href="tags/tag_base.asp">Artigo da comunidade do ServiceNow sobre como integrar o Virtual Agent.</a></br>
+  <br><a href="tags/tag_base2.asp">Documentação oficial sobre adicionar o Virtual Agent em sites externos.</a></br>
+  <br><a href="tags/tag_base3.asp">Configuração do SSO no Virtual Agent</a></br>
+  
+  <iframe 
+    id="sn_va_web_client"
+    title="ServiceNow Virtual Agent Client"
+    width="600" 
+    height="900"
+    src="https://dev248355.service-now.com/sn_va_web_client_app_embed.do" 
+    style="border: none;" 
+    allow="cross-origin"></iframe>
+
+  <script>
+    window.addEventListener('message', receiveMessage, false);
+
+    function receiveMessage(event) {
+      if (event.origin !== 'https://dev248355.service-now.com') {
+        return;
+      }
+
+      if (event.data === "message") {
+        window.location.href = "https://dev248355.service-now.com/sn_va_web_client_login.do?sysparm_redirect_uri=<your-page>";
+      }
+    }
+  </script>
+</body>
