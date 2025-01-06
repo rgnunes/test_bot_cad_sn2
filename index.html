@@ -1,19 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <script type="module">
-    import ServiceNowChat from "https://carteiradaterradev.dataprev.gov.br/uxasset/externals/now-requestor-chat-popover-app/index.jsdbx?sysparm_substitute=false";
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Decoder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            color: #555;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            font-family: monospace;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        pre {
+            background: #eee;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+    <script>
+        function decodeJWT() {
+            const jwtInput = document.getElementById("jwtInput").value.trim();
+            const resultDiv = document.getElementById("result");
 
-    // Initiate Virtual Agent
-    var chat = new ServiceNowChat({
-      instance: "https://carteiradaterradev.dataprev.gov.br/",
-      sso: true,
-      userToken: "",
-    });
+            try {
+                const [header, payload, signature] = jwtInput.split('.');
+                if (!header || !payload || !signature) {
+                    throw new Error("Invalid JWT format");
+                }
 
-  </script>
+                const decodedPayload = JSON.parse(atob(payload));
+                resultDiv.innerHTML = `
+                    <h2>Decoded Payload</h2>
+                    <pre>${JSON.stringify(decodedPayload, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
 </head>
-
 <body>
-  <br><a href="https://www.servicenow.com/community/virtual-agent-nlu-articles/how-to-embed-virtual-agent-in-an-external-site-updated-for-tokyo/ta-p/2308092">Artigo da comunidade do ServiceNow sobre como integrar o Virtual Agent.</a></br>
-  <br><a href="https://www.servicenow.com/docs/pt-BR/bundle/xanadu-conversational-interfaces/page/administer/virtual-agent/task/add-portable-va-client-website.html">Documentação oficial sobre adicionar o Virtual Agent em sites externos.</a></br>
-  <br><a href="https://www.servicenow.com/community/virtual-agent-nlu-articles/embed-virtual-agent-in-an-external-website-with-sso-integration/ta-p/2309231">Documentação configuração do SSO no Virtual Agent</a></br>
+    <h1>JWT Decoder</h1>
+    <form onsubmit="event.preventDefault(); decodeJWT();">
+        <label for="jwtInput">Enter your JWT:</label>
+        <textarea id="jwtInput" placeholder="Paste your JWT here..."></textarea>
+        <button type="submit">Decode</button>
+    </form>
+    <div id="result"></div>
 </body>
+</html>
