@@ -1,40 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Chatbot via SSO</title>
+    <title>Chatbot com Autenticação SSO</title>
     <script>
-        // Função para buscar o token
-        async function fetchAccessToken() {
+        async function checkSSOAccess() {
             try {
-                const response = await fetch('/api/x_your_namespace/get_token'); // Substitua pelo endpoint correto
+                // Faz a requisição para verificar o token de SSO
+                const response = await fetch('/api/x_your_namespace/get_token', { method: 'GET' });
                 const result = await response.json();
 
                 if (result.success) {
-                    console.log("Access Token:", result.token);
-                    initializeChatbot(result.token);
+                    document.getElementById("status").innerText = "Acesso permitido!";
+                    document.getElementById("token").innerText = `Token: ${result.token}`;
+                    loadChatbot(); // Carrega o chatbot
                 } else {
-                    alert(result.message || "Access denied: Unable to authenticate via SSO.");
+                    document.getElementById("status").innerText = "Acesso negado: " + result.message;
+                    document.getElementById("chatbot-container").innerHTML = ""; // Remove o chatbot
                 }
             } catch (error) {
-                console.error("Error fetching token:", error);
-                alert("An error occurred while authenticating.");
+                console.error("Erro ao validar SSO:", error);
+                document.getElementById("status").innerText = "Erro ao validar SSO.";
             }
         }
 
-        // Função para inicializar o chatbot
-        function initializeChatbot(token) {
-            // Exemplo com token no Virtual Agent
-            const chatbotIframe = document.getElementById("chatbot");
-            chatbotIframe.src = `https://your-instance.service-now.com/api/sn_va_as_service/virtualagent?vafRuntimeMode=true&sysparm_ssotoken=${token}`;
-            chatbotIframe.style.display = "block";
+        function loadChatbot() {
+            // Configuração do Virtual Agent
+            const snVaSettings = {
+                height: '500px',
+                width: '400px',
+                botName: 'Virtual Agent',
+                // Atualize com os detalhes da instância
+                instance: 'https://seu-instance.service-now.com',
+                // Configurações adicionais do Virtual Agent
+                headerLogo: 'https://seu-instance.service-now.com/logo.png',
+            };
+
+            const chatbotIframe = document.createElement("iframe");
+            chatbotIframe.src = `${snVaSettings.instance}/$chat_support.do`;
+            chatbotIframe.style.width = snVaSettings.width;
+            chatbotIframe.style.height = snVaSettings.height;
+            chatbotIframe.style.border = "none";
+
+            document.getElementById("chatbot-container").appendChild(chatbotIframe);
         }
 
-        // Chama a função ao carregar a página
-        window.onload = fetchAccessToken;
+        window.onload = checkSSOAccess;
     </script>
 </head>
 <body>
-    <h1>Bem-vindo ao Chatbot</h1>
-    <iframe id="chatbot" style="width: 100%; height: 500px; display: none;"></iframe>
+    <h1>Chatbot com Autenticação SSO</h1>
+    <p id="status">Validando...</p>
+    <p id="token"></p>
+    <div id="chatbot-container"></div>
+
+    <br><a href="https://www.servicenow.com/community/virtual-agent-nlu-articles/how-to-embed-virtual-agent-in-an-external-site-updated-for-tokyo/ta-p/2308092">Artigo da comunidade do ServiceNow sobre como integrar o Virtual Agent.</a></br>
+    <br><a href="https://www.servicenow.com/docs/pt-BR/bundle/xanadu-conversational-interfaces/page/administer/virtual-agent/task/add-portable-va-client-website.html">Documentação oficial sobre adicionar o Virtual Agent em sites externos.</a></br>
+    <br><a href="https://www.servicenow.com/community/virtual-agent-nlu-articles/embed-virtual-agent-in-an-external-website-with-sso-integration/ta-p/2309231">Documentação configuração do SSO no Virtual Agent</a></br>
 </body>
 </html>
