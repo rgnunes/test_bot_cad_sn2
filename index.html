@@ -1,60 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Chatbot com Autenticação SSO</title>
+    <title>Chatbot Virtual Agent</title>
     <script>
-        async function checkSSOAccess() {
-            try {
-                // Faz a requisição para verificar o token de SSO
-                const response = await fetch('/api/x_your_namespace/get_token', { method: 'GET' });
-                const result = await response.json();
+        async function loadChatbot() {
+            const instanceUrl = "https://sua-instancia.service-now.com"; // Substitua pela URL da sua instância
+            const clientId = "SEU_CLIENT_ID"; // Insira o Client ID do OAuth
+            const clientSecret = "SEU_CLIENT_SECRET"; // Insira o Client Secret do OAuth
 
-                if (result.success) {
-                    document.getElementById("status").innerText = "Acesso permitido!";
-                    document.getElementById("token").innerText = `Token: ${result.token}`;
-                    loadChatbot(); // Carrega o chatbot
-                } else {
-                    document.getElementById("status").innerText = "Acesso negado: " + result.message;
-                    document.getElementById("chatbot-container").innerHTML = ""; // Remove o chatbot
+            try {
+                // 1. Solicitar o token JWT
+                const tokenResponse = await fetch(`${instanceUrl}/oauth_token.do`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                        grant_type: "password", // Ou outro grant_type configurado
+                        client_id: clientId,
+                        client_secret: clientSecret,
+                        username: "USUÁRIO", // Substitua pelo username para teste
+                        password: "SENHA"   // Substitua pela senha para teste
+                    }),
+                });
+
+                if (!tokenResponse.ok) {
+                    throw new Error("Erro ao obter o token JWT");
                 }
+
+                const tokenData = await tokenResponse.json();
+                const accessToken = tokenData.access_token;
+
+                // 2. Configurar o chatbot com o token
+                const chatbotIframe = document.createElement("iframe");
+                chatbotIframe.src = `${instanceUrl}/$chat_support.do?sysparm_stack=no&sysparm_token=${accessToken}`;
+                chatbotIframe.style.border = "none";
+                chatbotIframe.style.width = "400px";
+                chatbotIframe.style.height = "500px";
+
+                document.getElementById("chatbot-container").appendChild(chatbotIframe);
             } catch (error) {
-                console.error("Erro ao validar SSO:", error);
-                document.getElementById("status").innerText = "Erro ao validar SSO.";
+                console.error("Erro ao carregar o chatbot:", error);
+                alert("Não foi possível conectar ao chatbot.");
             }
         }
 
-        function loadChatbot() {
-            // Configuração do Virtual Agent
-            const snVaSettings = {
-                height: '500px',
-                width: '400px',
-                botName: 'Virtual Agent',
-                // Atualize com os detalhes da instância
-                instance: 'https://seu-instance.service-now.com',
-                // Configurações adicionais do Virtual Agent
-                headerLogo: 'https://seu-instance.service-now.com/logo.png',
-            };
-
-            const chatbotIframe = document.createElement("iframe");
-            chatbotIframe.src = `${snVaSettings.instance}/$chat_support.do`;
-            chatbotIframe.style.width = snVaSettings.width;
-            chatbotIframe.style.height = snVaSettings.height;
-            chatbotIframe.style.border = "none";
-
-            document.getElementById("chatbot-container").appendChild(chatbotIframe);
-        }
-
-        window.onload = checkSSOAccess;
+        window.onload = loadChatbot;
     </script>
 </head>
 <body>
-    <h1>Chatbot com Autenticação SSO</h1>
-    <p id="status">Validando...</p>
-    <p id="token"></p>
+    <h1>Chatbot Virtual Agent</h1>
     <div id="chatbot-container"></div>
 
     <br><a href="https://www.servicenow.com/community/virtual-agent-nlu-articles/how-to-embed-virtual-agent-in-an-external-site-updated-for-tokyo/ta-p/2308092">Artigo da comunidade do ServiceNow sobre como integrar o Virtual Agent.</a></br>
     <br><a href="https://www.servicenow.com/docs/pt-BR/bundle/xanadu-conversational-interfaces/page/administer/virtual-agent/task/add-portable-va-client-website.html">Documentação oficial sobre adicionar o Virtual Agent em sites externos.</a></br>
     <br><a href="https://www.servicenow.com/community/virtual-agent-nlu-articles/embed-virtual-agent-in-an-external-website-with-sso-integration/ta-p/2309231">Documentação configuração do SSO no Virtual Agent</a></br>
+
 </body>
 </html>
+
+    
