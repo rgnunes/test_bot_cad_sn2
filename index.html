@@ -1,29 +1,40 @@
-<head> 
-  <script type="module">
-    import ServiceNowChat from "https://carteiradaterradev.dataprev.gov.br/uxasset/externals/now-requestor-chat-popover-app/index.jsdbx?sysparm_substitute=false";
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot via SSO</title>
+    <script>
+        // Função para buscar o token
+        async function fetchAccessToken() {
+            try {
+                const response = await fetch('/api/x_your_namespace/get_token'); // Substitua pelo endpoint correto
+                const result = await response.json();
 
-    // Initiate Virtual Agent
-    var chat = new ServiceNowChat({
-      instance: "https://carteiradaterradev.dataprev.gov.br/",
-      sso: true,
-      userToken: "",
-    });
+                if (result.success) {
+                    console.log("Access Token:", result.token);
+                    initializeChatbot(result.token);
+                } else {
+                    alert(result.message || "Access denied: Unable to authenticate via SSO.");
+                }
+            } catch (error) {
+                console.error("Error fetching token:", error);
+                alert("An error occurred while authenticating.");
+            }
+        }
 
-  </script>
+        // Função para inicializar o chatbot
+        function initializeChatbot(token) {
+            // Exemplo com token no Virtual Agent
+            const chatbotIframe = document.getElementById("chatbot");
+            chatbotIframe.src = `https://your-instance.service-now.com/api/sn_va_as_service/virtualagent?vafRuntimeMode=true&sysparm_ssotoken=${token}`;
+            chatbotIframe.style.display = "block";
+        }
+
+        // Chama a função ao carregar a página
+        window.onload = fetchAccessToken;
+    </script>
 </head>
-
 <body>
-  <br><a href="https://www.servicenow.com/community/virtual-agent-nlu-articles/how-to-embed-virtual-agent-in-an-external-site-updated-for-tokyo/ta-p/2308092">Artigo da comunidade do ServiceNow sobre como integrar o Virtual Agent.</a></br>
-  <br><a href="https://www.servicenow.com/docs/pt-BR/bundle/xanadu-conversational-interfaces/page/administer/virtual-agent/task/add-portable-va-client-website.html">Documentação oficial sobre adicionar o Virtual Agent em sites externos.</a></br>
-  <br><a href="https://www.servicenow.com/community/virtual-agent-nlu-articles/embed-virtual-agent-in-an-external-website-with-sso-integration/ta-p/2309231">Documentação configuração do SSO no Virtual Agent</a></br>
-  <iframe 
-   id="sn_va_web_client"
-    title="ServiceNow Virtual Agent Client"
-    width="600"
-    height="900"
-    src="https://dataprevclientesdev.service-now.com/sn_va_web_client_app_embed.do">
-    "https://dataprevclientesdev.service-now.com/"https://dataprevclientesdev.service-now.com/
-</iframe>
-
-
+    <h1>Bem-vindo ao Chatbot</h1>
+    <iframe id="chatbot" style="width: 100%; height: 500px; display: none;"></iframe>
 </body>
+</html>
